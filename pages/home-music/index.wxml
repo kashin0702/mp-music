@@ -8,13 +8,14 @@ bind:click-input="goSearch"
 >
 </van-search>
 <view class="home-music">
-  <swiper 
+ <!-- 动态计算swiper高度 -->
+  <swiper style="height:{{ swiperHeight }}px ;"
   indicator-dots 
   circular
   autoplay
-  interval>
+  interval="3000">
     <swiper-item wx:for="{{bannersList}}" wx:key="*this">
-      <image src="{{item.pic}}"></image>
+      <image src="{{item.pic}}" class="swiper-image" mode="widthFix" bindload="imageLoaded"></image>
     </swiper-item>
   </swiper>
 </view>

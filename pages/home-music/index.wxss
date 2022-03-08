@@ -3,3 +3,6 @@
   /* 搜索栏背景色 */
   background-color: #fff!important;
 } 
+.swiper-image {
+  width: 100%;
+}
