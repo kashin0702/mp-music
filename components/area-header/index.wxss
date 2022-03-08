@@ -1,0 +1,6 @@
+/* components/area-header/index.wxss */
+/* 当插槽内为空时，给.default设置样式 */
+/* +号： 相邻兄弟选择器 */
+.header .slot:empty + .default {
+  display: flex;
+}

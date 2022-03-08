@@ -1,0 +1,12 @@
+<!--components/area-header/index.wxml-->
+<view class="header">
+  <view class="title">{{title}}</view>
+  <!-- 小程序不支持默认slot, 这里利用css处理 -->
+  <view class="slot">
+    <slot></slot>
+  </view>
+  <view class="right" wx:if="{{ showRight }}">
+    <text>{{rightText}}</text>
+    <image src="" class="icon"></image>
+  </view>
+</view>

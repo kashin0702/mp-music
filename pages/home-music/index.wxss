@@ -1,8 +1,15 @@
 /* pages/home-music/index.wxss */
+page {
+  padding: 0 20rpx;
+}
 .van-search__content {
   /* 搜索栏背景色 */
   background-color: #fff!important;
 } 
 .swiper-image {
   width: 100%;
+}
+swiper {
+  border-radius: 10rpx;
+  overflow: hidden;
 }
