@@ -1,0 +1,5 @@
+/* pages/home-music/index.wxss */
+.van-search__content {
+  /* 搜索栏背景色 */
+  background-color: #fff!important;
+} 

@@ -1,0 +1,5 @@
+<!--pages/video-detail/index.wxml-->
+<video src="{{MVURL}}" class="video" autoplay loop></video>
+<view wx:for="{{100}}" wx:key="*this">
+数据列表{{item}}
+</view>

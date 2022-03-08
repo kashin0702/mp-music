@@ -1,0 +1,12 @@
+/* pages/video-detail/index.wxss */
+page {
+  /* 关键属性：页面容器设置padding-top 把list挤下去 */
+  padding-top: 225px;
+}
+.video {
+  /* fixed相对于窗口定位 */
+  position: fixed;
+  width: 100%;
+  /* 定位到窗口顶部 */
+  top: 0;
+}

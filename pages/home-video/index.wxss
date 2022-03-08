@@ -1,0 +1,11 @@
+/* pages/video/video.wxss */
+.video {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+/* 包裹组件video-item-v1的容器设置宽度48%, flex布局就不会异常 */
+.video-item {
+  width: 48%;
+}

@@ -1,0 +1,20 @@
+<!--pages/home-music/index.wxml-->
+<!-- background:外边框背景色 -->
+<van-search
+disabled
+background="#fafafa"
+shape="round"
+bind:click-input="goSearch"
+>
+</van-search>
+<view class="home-music">
+  <swiper 
+  indicator-dots 
+  circular
+  autoplay
+  interval>
+    <swiper-item wx:for="{{bannersList}}" wx:key="*this">
+      <image src="{{item.pic}}"></image>
+    </swiper-item>
+  </swiper>
+</view>
