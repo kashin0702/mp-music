@@ -5,8 +5,8 @@
   <view class="slot">
     <slot></slot>
   </view>
-  <view class="right" wx:if="{{ showRight }}">
+  <view class="default" wx:if="{{ showRight }}">
     <text>{{rightText}}</text>
-    <image src="" class="icon"></image>
+    <image src="/assets/img/arrow-right.png" class="icon" mode="widthFix"></image>
   </view>
 </view>

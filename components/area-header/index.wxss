@@ -1,6 +1,27 @@
 /* components/area-header/index.wxss */
-/* 当插槽内为空时，给.default设置样式 */
-/* +号： 相邻兄弟选择器 */
+
+.header {
+  margin-top: 20rpx;
+  display: flex;
+  justify-content: space-between;
+}
+.header .title {
+  font-weight: 600;
+  font-size: 36rpx;
+}
+/* 当插槽内为空时，让.default显示， +号表示相邻兄弟选择器 */
 .header .slot:empty + .default {
   display: flex;
+  align-items: center;
+}
+
+.header .default {
+  /* 当插槽不为空时，不显示默认内容，实现互斥 */
+  display: none;
+  color: #ccc;
+  font-weight: 400;
+}
+.header .default .icon {
+  width: 40rpx;
+  height: 40rpx;
 }
