@@ -1,3 +1,5 @@
+// 第三方库的rankingStore对象
+import {rankingStore} from '../../store/index'
 import {getBanners} from '../../service/musicData'
 import queryRect from '../../utils/query-rect'
 import {throttle} from '../../utils/throttle'
@@ -11,7 +13,8 @@ Page({
    */
   data: {
     bannersList: [],
-    swiperHeight: 0  //swiper容器高度,动态计算适配小屏
+    swiperHeight: 0,  //swiper容器高度,动态计算适配小屏
+    recommends: []
   },
   goSearch() {
     wx.navigateTo({
@@ -41,6 +44,17 @@ Page({
 
   onLoad: function (options) {
     this.getPageData()
+    // 调用第三方库store的dispatch 进行网络请求
+    rankingStore.dispatch('getRankingAction')
+    // 当hotRanking有修改， onsState会自动执行 做到响应式
+    rankingStore.onState('hotRanking', (res) => {
+      if(res.tracks) {
+        const recommends = res.tracks.slice(0, 6) // 获取前6条数据
+        this.setData({
+          recommends
+        })
+      }
+    })
   },
 
   onReady: function () {
