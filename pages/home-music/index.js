@@ -3,7 +3,7 @@ import {rankingStore} from '../../store/index'
 import { 
   getBanners,
   getSongMenu 
-} from '../../service/musicData'
+} from '../../service/api-music'
 import queryRect from '../../utils/query-rect'
 import {throttle} from '../../utils/throttle'
 // throttle返回一个真正执行的节流函数, 传入要节流的方法queryRect
@@ -19,7 +19,12 @@ Page({
     swiperHeight: 0,  //swiper容器高度,动态计算适配小屏
     recommends: [],  // 推荐歌曲， 通过store层获得
     playList1: [],
-    playList2: []
+    playList2: [],
+    otherRanking: { // 3个榜单放在一个总对象内，方便遍历
+      'newRanking': {}, 
+      'originRanking': {}, 
+      'highRanking': {}
+    } 
   },
   goSearch() {
     wx.navigateTo({
@@ -75,8 +80,37 @@ Page({
       }
     })
 
+    // 获取其他3榜单
+    rankingStore.dispatch('getOtherRankingAction')
+    rankingStore.onState('newRanking', this.rankingHandler('newRanking'))
+    rankingStore.onState('originRanking', this.rankingHandler('originRanking'))
+    rankingStore.onState('highRanking', this.rankingHandler('highRanking'))
   },
-
+  // 监听数据的处理函数，利用柯里化返回一个真正要执行的回调函数
+  rankingHandler(rankingName) {
+    return (res) => {
+      if(res && res.tracks && res.tracks.length > 0) {
+          // 整合要显示的数据
+        const name = res.name
+        const songs = res.tracks.slice(0,3)
+        const cover = res.coverImgUrl
+        const count = res.commentCount
+        // 创建一个新的榜单对象
+        const rankObj = {
+          [rankingName]: {
+            name,
+            songs,
+            cover,
+            count
+          }
+        }
+        const newObj = {...this.data.otherRanking, ...rankObj} // 必须用浅拷贝方法 添加属性，不然每次都会覆盖上次请求的数据
+        this.setData({
+          otherRanking: newObj
+        })
+      }
+    }
+  },
   onReady: function () {
 
   },

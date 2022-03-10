@@ -1,5 +1,5 @@
 // pages/music/music.js
-import {getTopMV} from '../../service/videoData'
+import {getTopMV} from '../../service/api-video'
 Page({
 
   /**

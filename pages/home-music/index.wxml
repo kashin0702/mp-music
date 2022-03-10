@@ -32,4 +32,13 @@ bind:click-input="goSearch"
   <!-- 歌单 -->
   <music-menu title="热门歌单" rightText="更多" playList="{{playList1}}"></music-menu>
   <music-menu title="推荐歌单" rightText="更多" playList="{{playList2}}"></music-menu>
+
+  <!-- 榜单 -->
+  <area-header title="巅峰榜" showRight="{{false}}">
+    <block wx:for="{{rankings}}" wx:key="index">
+      <view class="ranking-item">
+        
+      </view>
+    </block>
+  </area-header>
 </view>
