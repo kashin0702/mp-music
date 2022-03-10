@@ -1,0 +1,53 @@
+/* components/music-menu/index.wxss */
+scroll-view {
+  margin-top: 20rpx;
+  position: relative;
+  /*滚动时左侧不被padding遮挡*/
+  left: -20rpx; 
+  white-space: nowrap;
+  /* 让横向滚动条右侧没有父元素padding遮挡 */
+  width: 100vw;  
+
+}
+.menu-item {
+  display: inline-block;
+  margin-left: 20rpx;
+  width: 200rpx;
+}
+.menu-item:last-of-type {
+  margin-top: 20rpx;
+  margin-right: 20rpx; /*滚动到最后时 右侧增加20边距*/
+}
+.top {
+  position: relative;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+.top image {
+  display: flex;
+  width: 100%;
+}
+.top .play-count {
+  position: absolute;
+  padding: 5rpx;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 10rpx;
+  font-size: 24rpx;
+  color: #fff;
+  right: 0;
+  bottom: 0;
+}
+.bottom {
+  font-size: 24rpx;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-line-clamp: 2;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: normal;
+  overflow: hidden;
+}

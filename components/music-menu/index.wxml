@@ -1,0 +1,16 @@
+<!--components/music-menu/index.wxml-->
+<wxs src="../../utils/format.wxs" module="format"></wxs>
+<area-header title="{{title}}" rightText="{{rightText}}"></area-header>
+<view class="menu-list">
+  <scroll-view scroll-x>
+    <view class="menu-item" wx:for="{{playList}}" wx:key="id">
+      <view class="top">
+        <image src="{{item.coverImgUrl}}" mode="widthFix"></image>
+        <view class="play-count">{{format.formatCount(item.commentCount)}}</view>
+      </view>
+      <view class="bottom">
+        {{item.name + ' ' + item.description}}
+      </view>
+    </view>
+  </scroll-view>
+</view>

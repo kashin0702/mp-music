@@ -11,3 +11,12 @@ export function getRanking(idx) {
     idx
   })
 }
+
+// 获取热门歌单
+export function getSongMenu(cat="全部", limit=10, offset=0) {
+  return request.get('/top/playlist', {
+    cat,
+    limit,
+    offset
+  })
+}

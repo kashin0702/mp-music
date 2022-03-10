@@ -1,0 +1,13 @@
+<!--components/music-item-v1/index.wxml-->
+<view class="recommends">
+  <view class="cover">
+    <image src="{{item.al.picUrl}}" mode="widthFix"></image>
+  </view>
+  <view class="desc">
+    <view class="song-name">{{item.al.name}}</view>
+    <view class="song-artist">{{item.ar[0].name}} · {{item.al.name}}</view>
+  </view>
+  <view class="icon">
+    <image src="/assets/img/arrow-right.png" mode="widthFix"></image>
+  </view>
+</view>

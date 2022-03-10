@@ -1,6 +1,9 @@
-// 第三方库的rankingStore对象
+// 导入第三方库的rankingStore对象
 import {rankingStore} from '../../store/index'
-import {getBanners} from '../../service/musicData'
+import { 
+  getBanners,
+  getSongMenu 
+} from '../../service/musicData'
 import queryRect from '../../utils/query-rect'
 import {throttle} from '../../utils/throttle'
 // throttle返回一个真正执行的节流函数, 传入要节流的方法queryRect
@@ -14,7 +17,9 @@ Page({
   data: {
     bannersList: [],
     swiperHeight: 0,  //swiper容器高度,动态计算适配小屏
-    recommends: []
+    recommends: [],  // 推荐歌曲， 通过store层获得
+    playList1: [],
+    playList2: []
   },
   goSearch() {
     wx.navigateTo({
@@ -34,19 +39,33 @@ Page({
   },
   // 获取页面数据
   getPageData() {
+    // 获取轮播
     getBanners().then(res => {
       console.log('轮播图====', res)
       this.setData({
         bannersList: res.banners
       })
     })
+    // 获取默认全部歌单
+    getSongMenu().then(res => {
+      console.log('歌单===', res)
+      this.setData({
+        playList1: res.playlists
+      })
+    })
+    // 获取华语歌单
+    getSongMenu('华语').then(res => {
+      this.setData({
+        playList2: res.playlists
+      })
+    })
   },
 
   onLoad: function (options) {
     this.getPageData()
-    // 调用第三方库store的dispatch 进行网络请求
+    // 调用第三方状态库store的dispatch 进行网络请求
     rankingStore.dispatch('getRankingAction')
-    // 当hotRanking有修改， onsState会自动执行 做到响应式
+    // 当hotRanking有变化， onsState会自动执行 做到响应式
     rankingStore.onState('hotRanking', (res) => {
       if(res.tracks) {
         const recommends = res.tracks.slice(0, 6) // 获取前6条数据
@@ -55,6 +74,7 @@ Page({
         })
       }
     })
+
   },
 
   onReady: function () {

@@ -1,0 +1,36 @@
+/* components/music-item-v1/index.wxss */
+.recommends {
+  display: flex;
+  margin: 20rpx 0;
+}
+.cover {
+  width: 100rpx;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+.cover image {
+  width: 100%;
+  /* 解决图片对齐覆盖问题 */
+  display: flex; 
+}
+.desc {
+  padding-left: 10rpx;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+.desc .song-name {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+.desc .song-artist {
+  font-size: 24rpx;
+  color: #ccc;
+}
+.icon {
+  width: 40rpx;
+}
+.icon image {
+  width: 100%;
+}

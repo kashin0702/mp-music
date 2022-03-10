@@ -1,6 +1,7 @@
 /* pages/home-music/index.wxss */
 page {
   padding: 0 20rpx;
+  box-sizing: border-box;
 }
 .van-search__content {
   /* 搜索栏背景色 */

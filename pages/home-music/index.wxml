@@ -21,8 +21,15 @@ bind:click-input="goSearch"
 
 <!-- 推荐歌曲 -->
   <view class="recommend-song">
-    <area-header title="推荐歌曲" rightText="更多">
+    <area-header title="推荐歌曲" rightText="更多" style="margin-bottom: 30rpx;">
       <!-- <view>我是自定义插槽哈哈哈</view> -->
     </area-header>
+    <block wx:for="{{recommends}}" wx:key="id">
+      <!-- <music-item-v1 item="{{item}}"></music-item-v1> -->
+    </block>
   </view>
+
+  <!-- 歌单 -->
+  <music-menu title="热门歌单" rightText="更多" playList="{{playList1}}"></music-menu>
+  <music-menu title="推荐歌单" rightText="更多" playList="{{playList2}}"></music-menu>
 </view>
