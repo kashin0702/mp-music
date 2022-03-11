@@ -23,7 +23,7 @@ const rankingStore = new HYEventStore({
     getOtherRankingAction(ctx) {
       for(let i = 0; i < 4; i++) {
         getRanking(i).then(res => {
-          // console.log('榜单', i, res) // then是异步的，不能保证哪个res先返回
+          // console.log('榜单', i, res) // then是异步的，不能保证哪个res对应的i先返回
           let rankingName = rankingMap[i] // 获取i对应的ranking
           ctx[rankingName] = res.playlist
         })

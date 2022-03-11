@@ -3,7 +3,7 @@
 <area-header title="{{title}}" rightText="{{rightText}}"></area-header>
 <view class="menu-list">
   <scroll-view scroll-x>
-    <view class="menu-item" wx:for="{{playList}}" wx:key="id">
+    <view class="menu-item" wx:for="{{playList}}" wx:key="id" bindtap="menuItemClick" data-id="{{item.id}}">
       <view class="top">
         <image src="{{item.coverImgUrl}}" mode="widthFix"></image>
         <view class="play-count">{{format.formatCount(item.commentCount)}}</view>

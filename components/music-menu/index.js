@@ -29,6 +29,10 @@ Component({
    * 组件的方法列表
    */
   methods: {
-
+    menuItemClick(event) {
+      console.log('子组件menu点击事件===>', event)
+      const id = event.currentTarget.dataset.id
+      this.triggerEvent('menuItemClick', {id}) // 传参注意要加{}
+    }
   }
 })

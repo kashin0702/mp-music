@@ -5,7 +5,7 @@
   <view class="slot">
     <slot></slot>
   </view>
-  <view class="default" wx:if="{{ showRight }}">
+  <view class="default" wx:if="{{ showRight }}" bindtap="rightClick">
     <text>{{rightText}}</text>
     <image src="/assets/img/arrow-right.png" class="icon" mode="widthFix"></image>
   </view>

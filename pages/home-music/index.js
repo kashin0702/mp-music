@@ -87,29 +87,43 @@ Page({
     rankingStore.onState('highRanking', this.rankingHandler('highRanking'))
   },
   // 监听数据的处理函数，利用柯里化返回一个真正要执行的回调函数
-  rankingHandler(rankingName) {
+  rankingHandler(rankingName) { // 传入要创建的榜单名
     return (res) => {
       if(res && res.tracks && res.tracks.length > 0) {
-          // 整合要显示的数据
-        const name = res.name
-        const songs = res.tracks.slice(0,3)
-        const cover = res.coverImgUrl
-        const count = res.commentCount
-        // 创建一个新的榜单对象
+        // 整合一个新的榜单对象
         const rankObj = {
           [rankingName]: {
-            name,
-            songs,
-            cover,
-            count
+            name: res.name,
+            songs: res.tracks.slice(0,3),
+            cover: res.coverImgUrl,
+            count: res.commentCount
           }
         }
-        const newObj = {...this.data.otherRanking, ...rankObj} // 必须用浅拷贝方法 添加属性，不然每次都会覆盖上次请求的数据
+        // 写法1
+        // const newObj = {...this.data.otherRanking, ...rankObj} // 用浅拷贝方法添加属性，不然每次setData都会覆盖上次的数据
+        // 写法2
+        const newObj = Object.assign(this.data.otherRanking, rankObj)
         this.setData({
           otherRanking: newObj
         })
       }
     }
+  },
+  // 右侧更多点击 进入歌曲榜单详情
+  rightClick (event) {
+    console.log('事件对象====', event)
+    const rankname = event.currentTarget.dataset.rankname
+    wx.navigateTo({
+      url: `/pages/songs-detail/index?rankname=${rankname}`,
+    })
+  },
+  // 歌单点击事件
+  menuItemClick(payload) {
+    console.log('携带歌单id的payload===>', payload)
+    const id = payload.detail.id
+    wx.navigateTo({
+      url: `/pages/songs-detail/index?id=${id}`,
+    })
   },
   onReady: function () {
 
