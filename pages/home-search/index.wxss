@@ -1,1 +1,22 @@
 /* pages/home-search/index.wxss */
+.van-search__content {
+  /* 搜索栏背景色 */
+  background-color: #fff!important;
+} 
+.suggest {
+  margin-top: 20rpx;
+  padding: 0 20rpx;
+}
+.suggest-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  margin: 20rpx;
+}
+.suggest-item {
+  margin: 20rpx;
+  display: flex;
+}
+.suggest-item image{
+  width: 40rpx;
+  vertical-align: middle;
+}

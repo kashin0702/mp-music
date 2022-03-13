@@ -1,4 +1,5 @@
 {
+  "setting": {},
   "condition": {
     "plugin": {
       "list": []
@@ -15,6 +16,20 @@
           "name": "详情",
           "pathName": "pages/video-detail/index",
           "query": "id=14480854",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "歌单详情",
+          "pathName": "pages/songs-detail/index",
+          "query": "id=7044174061",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "search",
+          "pathName": "pages/home-search/index",
+          "query": "",
           "scene": null,
           "launchMode": "default"
         }

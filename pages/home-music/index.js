@@ -10,10 +10,6 @@ import {throttle} from '../../utils/throttle'
 const queryThrottle = throttle(queryRect, 1000)
 
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
     bannersList: [],
     swiperHeight: 0,  //swiper容器高度,动态计算适配小屏

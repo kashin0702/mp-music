@@ -1,1 +1,94 @@
 /* pages/songs-detail/index.wxss */
+page {
+  padding: 0 20rpx;
+}
+.song-item {
+  display: flex;
+  margin: 20rpx 0;
+}
+.song-index {
+  width: 80rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.content {
+  flex: 1;
+}
+.name {
+  font-weight: 600;
+  font-size: 28rpx;
+  margin-bottom: 10rpx;
+}
+.artist {
+  color: #ccc;
+  font-size: 24rpx;
+  margin-bottom: 10rpx;
+}
+
+/* 歌单封面样式 */
+.menu-cover {
+  position: relative;
+  overflow: hidden;
+  width: 100vw;
+  left: -20rpx;
+}
+.back-img {
+  position: absolute;
+  width: 100%;
+  filter: blur(15rpx);
+  z-index: -1;
+}
+.menu-content {
+  display: flex;
+  padding: 40rpx 30rpx;
+}
+.menu-content .left {
+  flex: 1;
+}
+.left image {
+  width: 80%;
+}
+.menu-content .right {
+  color: #fff;
+  flex: 2;
+}
+.right .title {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+.creator image {
+  width: 40rpx;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.creator text {
+  font-size: 24rpx;
+  padding-left: 10rpx;
+}
+.desc {
+  font-size: 24rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.btn {
+  display: flex;
+  color: #fff;
+  font-size: 26rpx;
+  padding: 40rpx 0;
+}
+.favor {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.share {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

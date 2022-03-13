@@ -1,2 +1,21 @@
 <!--pages/home-search/index.wxml-->
-<text>pages/home-search/index.wxml</text>
+<van-search
+background="#fafafa"
+shape="round"
+placeholder="请输入要搜索的内容"
+bind:change="onSearchChange"
+value="{{searchValue}}"
+bind:search="handleSearch"
+>
+</van-search>
+
+<!-- 搜索建议 -->
+<view class="suggest" wx:if="{{searchValue.length && suggestNodeList.length}}">
+  <view class="suggest-title">搜索： "{{searchValue}}"</view>
+  <view class="suggest-item" wx:for="{{suggestNodeList}}" wx:key="*this" bindtap="suggestSearch" data-idx="{{index}}">
+    <image src="/assets/img/search_icon.png" mode="widthFix"></image>
+    <!-- <text class="suggest-name">{{item.keyword}}</text> -->
+    <!-- 利用富文本的node节点特性，将单条搜索结果切割成2个text节点做高亮处理 -->
+    <rich-text class="suggest-name" nodes="{{item}}"></rich-text>
+  </view>
+</view>
