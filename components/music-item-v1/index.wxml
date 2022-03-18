@@ -1,5 +1,5 @@
 <!--components/music-item-v1/index.wxml-->
-<view class="recommends">
+<view class="recommends" bindtap="itemClick" data-item="{{item}}">
   <view class="cover">
     <image src="{{item.al.picUrl}}" mode="widthFix"></image>
   </view>

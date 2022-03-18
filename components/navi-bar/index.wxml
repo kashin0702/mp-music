@@ -1,0 +1,12 @@
+<!--components/navi-bar/index.wxml-->
+<view class="bar-container">
+  <view class="left">
+    <image src="/assets/img/arrow-left.png" mode="widthFix"></image>
+  </view>
+  <view class="center">
+    <view class="song">歌曲</view>
+    <view class="divider">|</view>
+    <view class="lyric">歌词</view>
+  </view>
+  <view class="right"></view>
+</view>

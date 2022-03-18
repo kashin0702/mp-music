@@ -18,6 +18,7 @@ export function debounce(fn, delay, immediate = false, resultCallback) {
         // 延迟执行
         timer = setTimeout(() => {
           const result = fn.apply(this, args)
+          console.log('this对象是===>', this) // 这里的this是undefined
           if(resultCallback) resultCallback(result)
           resolve(result)
           isInvoke = false
