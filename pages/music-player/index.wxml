@@ -1,2 +1,45 @@
 <!--pages/music-player/index.wxml-->
-<text>pages/music-player/index.wxml</text>
+<view class="back-img">
+  <image src="{{songInfo[0].al.picUrl}}" mode="aspectFill"></image>
+</view>
+<!-- 遮罩层 多一层透黑效果 -->
+<view class="cover"></view>
+
+<!-- 顶部导航组件 -->
+<navi-bar barHeight="{{barHeight}}"></navi-bar>
+
+<!-- 用swiper轮播图组件实现歌曲和歌词的左右滑动  注意: 必须计算出确定高度，垂直flex的space-between和flex自适应才能生效-->
+<swiper style="height: {{contentHeight}}px;">
+  <!-- 歌曲  swiper-item继承swiper高度-->
+  <swiper-item class="swiper-item">
+    <view class="album-img">
+      <image src="{{songInfo[0].al.picUrl}}" mode="aspectFit"></image>
+    </view>
+    <view class="album-info">
+      <view class="title">{{songInfo[0].al.name}}</view>
+      <view class="artist">{{songInfo[0].ar[0].name}}</view>
+      <view class="album">专辑：《{{songInfo[0].alia[0]}}》</view>
+    </view>
+    <view class="lyric">我是歌词</view>
+    <view class="progress">
+      <slider block-size="{{20}}"></slider>
+      <view class="time">
+        <view class="start">0:00</view>
+        <view class="end">4:30</view>
+      </view>
+    </view>
+    <view class="operation">
+      <image src="/assets/player/play_order.png" class="btn" mode=""></image>
+      <image src="/assets/player/play_prev.png"  class="btn" mode=""></image>
+      <image src="/assets/player/play_resume.png" class="btn btn-pause" mode=""></image>
+      <image src="/assets/player/play_next.png" class="btn" mode=""></image>
+      <image src="/assets/player/play_music.png" class="btn" mode=""></image>
+    </view>
+  </swiper-item>
+  <!-- 歌词 -->
+  <swiper-item class="swiper-item">
+  我是歌词
+  </swiper-item>
+</swiper>
+
+

@@ -1,18 +1,24 @@
 // pages/music-player/index.js
 import { getSongInfo } from '../../service/api-player'
+const globalData = getApp().globalData
 Page({
-
   data: {
-    ids: ''
+    ids: '',
+    barHeight: globalData.statusBarHeight,
+    songInfo: {},
+    contentHeight: globalData.screenHeight - globalData.statusBarHeight - globalData.naviHeight // 显示区域高度
   },
   onLoad: function (options) {
     console.log('歌曲id===>', options)
-    this.setData({ ids: options.id})
+    this.setData({ 
+      ids: options.id
+    })
     this.getSongData(this.data.ids)
   },
   getSongData(ids) {
     getSongInfo(ids).then(res => {
       console.log('歌曲信息====', res)
+      this.setData({ songInfo: res.songs })
     })
   },
   onReady: function () {

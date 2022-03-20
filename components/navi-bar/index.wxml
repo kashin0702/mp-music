@@ -1,6 +1,10 @@
 <!--components/navi-bar/index.wxml-->
-<view class="bar-container">
-  <view class="left">
+<view class="bar-container" style="margin-top: {{barHeight}}px">
+<!-- 左侧插槽 -->
+<view class="left-slot">
+  <slot></slot>
+</view>
+  <view class="left" bindtap="goBack">
     <image src="/assets/img/arrow-left.png" mode="widthFix"></image>
   </view>
   <view class="center">
