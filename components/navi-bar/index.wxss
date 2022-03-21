@@ -1,1 +1,31 @@
 /* components/navi-bar/index.wxss */
+.bar-container {
+  display: flex;
+  height: 44px;
+  line-height: 44px;
+}
+.left-slot:empty + .left {
+  display: flex;
+}
+
+.left {
+  display: none;
+  flex: 1;
+  align-items: center;
+}
+.left image {
+  width: 55rpx;
+}
+.center {
+  font-size: 28rpx;
+  display: flex;
+  flex: 4;
+  justify-content: center;
+  align-items: center;
+}
+.right {
+  flex: 1
+}
+.song, .lyric {
+  padding: 10rpx;
+}
