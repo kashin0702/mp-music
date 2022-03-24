@@ -1,4 +1,5 @@
 <!--pages/music-player/index.wxml-->
+<wxs src="../../utils/format.wxs" module="format"></wxs>
 <view class="back-img">
   <image src="{{songInfo[0].al.picUrl}}" mode="aspectFill"></image>
 </view>
@@ -20,25 +21,40 @@
       <view class="artist">{{songInfo[0].ar[0].name}}</view>
       <view class="album">专辑：《{{songInfo[0].alia[0]}}》</view>
     </view>
-    <view class="lyric">我是歌词</view>
+    <!-- 动态歌词 难点 -->
+    <view class="lyric">{{currentLyric}}</view>
     <view class="progress">
-      <slider block-size="{{20}}"></slider>
+      <!-- 滑动条控件 -->
+      <slider block-size="{{20}}" 
+              value="{{sliderValue}}"
+              bindchange="sliderChange"
+              bindchanging="sliderChanging"
+              >
+      </slider>
       <view class="time">
-        <view class="start">0:00</view>
-        <view class="end">4:30</view>
+        <view class="start">{{ format.formatRegularTime(currentTime) }}</view>
+        <view class="end">{{ format.formatRegularTime(duration) }}</view>
       </view>
     </view>
     <view class="operation">
       <image src="/assets/player/play_order.png" class="btn" mode=""></image>
       <image src="/assets/player/play_prev.png"  class="btn" mode=""></image>
-      <image src="/assets/player/play_resume.png" class="btn btn-pause" mode=""></image>
+      <image src="/assets/player/play_resume.png" class="btn btn-pause" mode="" bindtap="musicPause"></image>
       <image src="/assets/player/play_next.png" class="btn" mode=""></image>
       <image src="/assets/player/play_music.png" class="btn" mode=""></image>
     </view>
   </swiper-item>
-  <!-- 歌词 -->
+  <!-- 全部歌词 -->
   <swiper-item class="swiper-item">
-  我是歌词
+    <scroll-view class="com-lyric" 
+    scroll-y
+    style="height: {{contentHeight}}px;"
+    >
+      <!-- 当前播放的索引和当前行相等，表示播放到该行，激活样式 -->
+      <view class="lyric-line {{index === currentIndex ? 'active' : ''}}" wx:for="{{pattarnLyric}}" wx:key="index">
+        {{item.text}}
+      </view>
+    </scroll-view>
   </swiper-item>
 </swiper>
 

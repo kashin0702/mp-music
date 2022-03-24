@@ -6,3 +6,10 @@ export function getSongInfo(ids) {
     ids
   })
 }
+
+// 获取歌词
+export function getLyric(id) {
+  return request.get('/lyric', {
+    id
+  })
+}

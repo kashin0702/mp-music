@@ -21,8 +21,15 @@ function formatTime(duration) {
   var sec = duration % 60
   return padLeft(min) + ':' + padLeft(sec)
 }
-
+// 非毫秒时间
+function formatRegularTime(duration) {
+  duration = Math.round(duration)
+  var min = Math.floor(duration / 60)
+  var sec = duration % 60
+  return padLeft(min) + ':' + padLeft(sec)
+}
 module.exports = {
   formatCount: formatCount,
-  formatTime: formatTime
+  formatTime: formatTime,
+  formatRegularTime: formatRegularTime
 }

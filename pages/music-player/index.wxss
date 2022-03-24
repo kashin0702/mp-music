@@ -70,3 +70,15 @@ page {
   width: 150rpx;
   height: 150rpx;
 }
+/* 隐藏滚动条 */
+::-webkit-scrollbar {
+  width:0;
+  height:0;
+  color:transparent;
+}
+/* 不要加逗号，表示同时拥有2个样式 */
+.lyric-line.active {
+  color: rgb(24, 219, 24);
+  font-size: 32rpx;
+  font-weight: 600;
+}
