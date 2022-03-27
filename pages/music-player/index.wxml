@@ -49,6 +49,8 @@
     <scroll-view class="com-lyric" 
     scroll-y
     style="height: {{contentHeight}}px;"
+    scroll-top="{{scrollLineDistance}}"
+    scroll-with-animation
     >
       <!-- 当前播放的索引和当前行相等，表示播放到该行，激活样式 -->
       <view class="lyric-line {{index === currentIndex ? 'active' : ''}}" wx:for="{{pattarnLyric}}" wx:key="index">

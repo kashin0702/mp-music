@@ -16,7 +16,9 @@ Page({
     pattarnLyric: [], // 格式化后歌词数组
     currentLyric: '',  // 当前要显示的歌词
     currentIndex: 0,  // 当前显示歌词对应的索引
-    isPause: false
+    isPause: false,
+    baseHeight: 41,
+    scrollLineDistance: '' // 歌词每次滚动的距离
   },
   onLoad: function (options) {
     console.log('歌曲id===>', options)
@@ -55,7 +57,8 @@ Page({
             // console.log(this.data.pattarnLyric[currentIndex].text)
             this.setData({
               currentLyric: this.data.pattarnLyric[currentIndex].text, // 歌词
-              currentIndex: currentIndex // 当前歌词索引
+              currentIndex: currentIndex, // 当前歌词索引
+              scrollLineDistance: this.data.baseHeight * currentIndex // 每次自动滚动的高度
             })
           }
           break // 一匹配到就立即跳出循环，否则会一直匹配，因为后面的循环都满足条件
