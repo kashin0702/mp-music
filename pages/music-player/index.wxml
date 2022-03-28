@@ -7,7 +7,7 @@
 <view class="cover"></view>
 
 <!-- 顶部导航组件 -->
-<navi-bar barHeight="{{barHeight}}"></navi-bar>
+<navi-bar barHeight="{{barHeight}}" bind:back="goback"></navi-bar>
 
 <!-- 用swiper轮播图组件实现歌曲和歌词的左右滑动  注意: 必须计算出确定高度，垂直flex的space-between和flex自适应才能生效-->
 <swiper style="height: {{contentHeight}}px;">

@@ -1,7 +1,8 @@
-// pages/music-player/index.js
-import { getSongInfo, getLyric } from '../../service/api-player'
+// 导入共享对象playerStore
+import {playerStore} from '../../store/music-player'
+// import { getSongInfo, getLyric } from '../../service/api-player' 
 // 导入音频对象实例
-import { audioContext } from '../../store/audio-player'
+import { audioContext } from '../../store/music-player'
 const globalData = getApp().globalData
 Page({
   data: {
@@ -25,22 +26,28 @@ Page({
     this.setData({ 
       ids: options.id
     })
-    this.getSongData(this.data.ids)
+    // 网络请求放到跳转时，调用store请求
+    // this.getSongData(this.data.ids)
+
+    // 这里只调用store进行数据监听，当store有数据时，对页面数据赋值
+    this.handlePlayerStore()
     
-    // 设置播放源
-    audioContext.stop()
-    audioContext.src = `https://music.163.com/song/media/outer/url?id=${this.data.ids}.mp3`
-    audioContext.onCanplay(() => { // 监听当音频可以播放时的回调，每次改变进度都会回调
-      audioContext.play() // 播放
-      console.log('canPlay回调')
-      audioContext.duration  // !!必须语句, 初始化时长!!
-      setTimeout(() => { // 这里用异步设置，不然拿不到duration 
-        this.setData({
-          duration: audioContext.duration // 未播放时不能获取到duration
-        })
-      },0)
-      
-    })
+    // 设置播放源 抽取到store内
+    // audioContext.stop()
+    // audioContext.src = `https://music.163.com/song/media/outer/url?id=${this.data.ids}.mp3`
+    // audioContext.autoplay = true
+   
+    // 监听当音频可以播放时的回调，每次改变进度都会回调
+    // audioContext.onCanplay(() => { 
+    //   audioContext.play() // 播放
+    //   console.log('canPlay回调')
+    //   audioContext.duration  // !!必须语句, 初始化时长!!
+    //   setTimeout(() => { // 这里用异步设置，不然拿不到duration 
+    //     this.setData({
+    //       duration: audioContext.duration // 未播放时不能获取到duration
+    //     })
+    //   },0)
+    // })
     audioContext.onTimeUpdate(() => {
       // console.log('进度更新回调', audioContext)
       if (!this.data.isSlider) { // 没有拖动时再设置数据，防止进度条冲突
@@ -66,6 +73,18 @@ Page({
       }
     })
     
+  },
+  goback() {
+    wx.navigateBack()
+  },
+  handlePlayerStore() {
+    // 监听属性可传多个属性， 当监听到数据发生改变时(如网络请求)，调setData进行页面赋值
+    playerStore.onStates(['songInfo', 'pattarnLyric', 'duration'], res => {
+      console.log('监听属性:', res) // 返回的是一个包含多个监听属性的对象
+      if(res.songInfo) this.setData({songInfo: res.songInfo})
+      if(res.pattarnLyric) this.setData({pattarnLyric: res.pattarnLyric})
+      if(res.duration) this.setData({duration: res.duration})
+    })
   },
   // 滑动条改变事件
   sliderChange(event) {
@@ -98,45 +117,45 @@ Page({
       audioContext.play()
     }
   },
-  getSongData(ids) {
-    getSongInfo(ids).then(res => {
-      console.log('歌曲信息====', res)
-      this.setData({ songInfo: res.songs })
-    })
-    // 歌词同步显示思路： 把字符串分秒换算成秒，和歌词放在一个数组对象中
-    getLyric(ids).then(res => {
-      // console.log('原始歌词====>', res)
-      let lyricString = res.lrc.lyric
-      lyricString = lyricString.split('\n') //利用字符串中的换行符对每行歌词切割成数组
-      // this.setData({lyricString})
-      const pattarnLyric = []
-      for(let lyricLine of lyricString) {
-        let lyricItem = this.parseLyric(lyricLine)
-        pattarnLyric.push(lyricItem)
-      }
-      console.log('转化后歌词数组====', pattarnLyric)
-      this.setData({ pattarnLyric })
-    })
-  },
+  // 网络请求
+  // getSongData(ids) {
+  //   getSongInfo(ids).then(res => {
+  //     console.log('歌曲信息====', res)
+  //     this.setData({ songInfo: res.songs })
+  //   })
+  //   // 歌词同步显示思路： 把字符串分秒换算成秒，和歌词放在一个数组对象中
+  //   getLyric(ids).then(res => {
+  //     // console.log('原始歌词====>', res)
+  //     let lyricString = res.lrc.lyric
+  //     lyricString = lyricString.split('\n') //利用字符串中的换行符对每行歌词切割成数组
+  //     // this.setData({lyricString})
+  //     const pattarnLyric = []
+  //     for(let lyricLine of lyricString) {
+  //       let lyricItem = this.parseLyric(lyricLine)
+  //       pattarnLyric.push(lyricItem)
+  //     }
+  //     console.log('转化后歌词数组====', pattarnLyric)
+  //     this.setData({ pattarnLyric })
+  //   })
+  // },
   // 歌词转化
-  parseLyric(lyric) {
-    // [00:01.152] 正则匹配这种类型的字符串
-    let reg = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/
-    let result = reg.exec(lyric)
-    // console.log('正则匹配结果', result)
-    if (result) { // 利用result返回的正则匹配数组，计算时间
-      let min = result[1] * 60
-      let sec = result[2] * 1
-      let miliSec = result[3].length === 2 ? (result[3] + '0') / 1000 : result[3] / 1000
-      let time = min + sec + miliSec
-      // console.log('时间点', time)
-      let text = lyric.replace(reg, '')  // 提取歌词部分
-      let lyricItem = { time, text } // 把转化后的时间和歌词放在一个对象中返回
-      return lyricItem
-    }
-    
-  },
+  // parseLyric(lyric) {
+  //   // [00:01.152] 正则匹配这种类型的字符串
+  //   let reg = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/
+  //   let result = reg.exec(lyric)
+  //   // console.log('正则匹配结果', result)
+  //   if (result) { // 利用result返回的正则匹配数组，计算时间
+  //     let min = result[1] * 60
+  //     let sec = result[2] * 1
+  //     let miliSec = result[3].length === 2 ? (result[3] + '0') / 1000 : result[3] / 1000
+  //     let time = min + sec + miliSec
+  //     // console.log('时间点', time)
+  //     let text = lyric.replace(reg, '')  // 提取歌词部分
+  //     let lyricItem = { time, text } // 把转化后的时间和歌词放在一个对象中返回
+  //     return lyricItem
+  //   }
+  // },
   onUnload: function () {
-
+    audioContext.offCanplay(() => {})
   }
 })
