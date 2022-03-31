@@ -10,7 +10,8 @@ const playerStore = new HYEventStore({
     id: '',
     songInfo: {},
     pattarnLyric: [],
-    duration: ''
+    duration: '',
+    playModeIndex: '0' // 播放模式索引
    },
    actions: {
      // 网络请求 解构传过来的id

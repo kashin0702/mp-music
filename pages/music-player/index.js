@@ -1,9 +1,11 @@
 // 导入共享对象playerStore
-import {playerStore} from '../../store/music-player'
+import { playerStore } from '../../store/music-player'
 // import { getSongInfo, getLyric } from '../../service/api-player' 
 // 导入音频对象实例
 import { audioContext } from '../../store/music-player'
 const globalData = getApp().globalData
+const playMode = ['order', 'random', 'repeat'] // 全局播放模式名称
+let playModeIndex = 0 // 全局playMode索引
 Page({
   data: {
     ids: '',
@@ -19,7 +21,8 @@ Page({
     currentIndex: 0,  // 当前显示歌词对应的索引
     isPause: false,
     baseHeight: 41,
-    scrollLineDistance: '' // 歌词每次滚动的距离
+    scrollLineDistance: '', // 歌词每次滚动的距离
+    playModeName: 'order', // 播放模式名称
   },
   onLoad: function (options) {
     console.log('歌曲id===>', options)
@@ -72,7 +75,6 @@ Page({
         }
       }
     })
-    
   },
   goback() {
     wx.navigateBack()
@@ -85,13 +87,21 @@ Page({
       if(res.pattarnLyric) this.setData({pattarnLyric: res.pattarnLyric})
       if(res.duration) this.setData({duration: res.duration})
     })
+
+    // 监听切换按钮索引值
+    playerStore.onState('playModeIndex', (playModeIndex) => {
+      console.log('监听playmode', playModeIndex)
+      this.setData({
+        playModeName: playMode[playModeIndex]
+      })
+    })
   },
   // 滑动条改变事件
   sliderChange(event) {
     console.log('滑动条释放====>', event)
     let positionTime = this.data.duration * (event.detail.value / 100)
     audioContext.pause() // 防止进度按钮跳动
-    audioContext.seek(positionTime) 
+    audioContext.seek(positionTime) // 跳转到指定位置
     this.setData({
       currentTime: positionTime,
       sliderValue: event.detail.value,
@@ -116,6 +126,12 @@ Page({
     } else {
       audioContext.play()
     }
+  },
+  // 播放模式切换
+  playModeClick() {
+    playModeIndex++
+    if(playModeIndex > 2) playModeIndex = 0 // 自增到3时，循环切换
+    playerStore.setState('playModeIndex', playModeIndex) //保存到共享数据 playModeIndex
   },
   // 网络请求
   // getSongData(ids) {
