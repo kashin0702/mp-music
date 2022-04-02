@@ -76,9 +76,22 @@ page {
   height:0;
   color:transparent;
 }
-/* 不要加逗号，表示同时拥有2个样式 */
+
+/* 样式间不加逗号，表示同时拥有2个样式 */
 .lyric-line.active {
   color: rgb(24, 219, 24);
   font-size: 32rpx;
   font-weight: 600;
+}
+.lyric-line {
+  text-align: center;
+  height: 80rpx;
+  line-height: 80rpx;
+}
+/* 歌词的第一个元素加padding scroll-view滚动时才不会被切割 */
+.lyric-line:first-child {
+  padding-top: 500rpx;
+}
+.lyric-line:last-child {
+  padding-bottom: 500rpx;
 }

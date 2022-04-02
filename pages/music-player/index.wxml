@@ -7,7 +7,7 @@
 <view class="cover"></view>
 
 <!-- 顶部导航组件 -->
-<navi-bar barHeight="{{barHeight}}"></navi-bar>
+<navi-bar barHeight="{{barHeight}}" bind:back="goback"></navi-bar>
 
 <!-- 用swiper轮播图组件实现歌曲和歌词的左右滑动  注意: 必须计算出确定高度，垂直flex的space-between和flex自适应才能生效-->
 <swiper style="height: {{contentHeight}}px;">
@@ -37,7 +37,8 @@
       </view>
     </view>
     <view class="operation">
-      <image src="/assets/player/play_order.png" class="btn" mode=""></image>
+      <!-- 播放模式，点击循环切换 -->
+      <image src="/assets/player/play_{{playModeName}}.png" class="btn" mode="" bindtap="playModeClick"></image>
       <image src="/assets/player/play_prev.png"  class="btn" mode=""></image>
       <image src="/assets/player/play_resume.png" class="btn btn-pause" mode="" bindtap="musicPause"></image>
       <image src="/assets/player/play_next.png" class="btn" mode=""></image>
@@ -49,6 +50,8 @@
     <scroll-view class="com-lyric" 
     scroll-y
     style="height: {{contentHeight}}px;"
+    scroll-top="{{scrollLineDistance}}"
+    scroll-with-animation
     >
       <!-- 当前播放的索引和当前行相等，表示播放到该行，激活样式 -->
       <view class="lyric-line {{index === currentIndex ? 'active' : ''}}" wx:for="{{pattarnLyric}}" wx:key="index">
