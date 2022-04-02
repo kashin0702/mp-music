@@ -1,4 +1,8 @@
 // 节流函数
+/**
+ * @param {boolean} leading 头部函数是否执行
+ * @param {boolean} trailing 尾部函数是否执行
+*/
 export function throttle(fn, interval, options = {leading: true, trailing: false}) {
   // 1.记录上一次开始时间
   const { leading, trailing, resultCallback } = options

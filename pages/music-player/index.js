@@ -23,6 +23,7 @@ Page({
     baseHeight: 41,
     scrollLineDistance: '', // 歌词每次滚动的距离
     playModeName: 'order', // 播放模式名称
+    playStatus: 'resume' // 暂停还是播放
   },
   onLoad: function (options) {
     console.log('歌曲id===>', options)
@@ -88,11 +89,11 @@ Page({
       if(res.duration) this.setData({duration: res.duration})
     })
 
-    // 监听切换按钮索引值
-    playerStore.onState('playModeIndex', (playModeIndex) => {
-      console.log('监听playmode', playModeIndex)
+    // 监听播放模式、播放|暂停按钮
+    playerStore.onStates(['playModeIndex', 'playStatus'], ({playModeIndex, playStatus}) => {
       this.setData({
-        playModeName: playMode[playModeIndex]
+        playModeName: playMode[playModeIndex],
+        playStatus: playStatus
       })
     })
   },
@@ -118,14 +119,8 @@ Page({
   },
   // 暂停 播放
   musicPause() {
-    this.setData({
-      isPause: !this.data.isPause
-    })
-    if(this.data.isPause) {
-      audioContext.pause()
-    } else {
-      audioContext.play()
-    }
+    // 播放按钮改变时，调用公共方法修改数据
+    playerStore.dispatch('changePlayStatus')
   },
   // 播放模式切换
   playModeClick() {
@@ -172,6 +167,5 @@ Page({
   //   }
   // },
   onUnload: function () {
-    audioContext.offCanplay(() => {})
   }
 })

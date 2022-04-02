@@ -11,11 +11,15 @@ const playerStore = new HYEventStore({
     songInfo: {},
     pattarnLyric: [],
     duration: '',
-    playModeIndex: '0' // 播放模式索引
+    playModeIndex: '0', // 播放模式索引
+    playStatus: 'resume', // 暂停|播放
+    isPause: false,
+    isFirstPlay: true // 重要属性！防止onPlay重复添加监听事件
    },
    actions: {
      // 网络请求 解构传过来的id
      getMusicPageDataAction(ctx, {id}) {
+       if(ctx.id === id) return // 是同一首歌，不做任何操作
        ctx.id = id
        // 1.请求歌曲相关数据
       getSongInfo(id).then(res => {
@@ -43,17 +47,32 @@ const playerStore = new HYEventStore({
       audioContext.src = `https://music.163.com/song/media/outer/url?id=${id}.mp3`
       audioContext.autoplay = true
 
-      audioContext.onCanplay(() => { 
-        audioContext.play() // 播放
-        console.log('canPlay回调')
-        audioContext.duration  // !!必须语句, 初始化时长!!
-        setTimeout(() => { // 这里用异步设置，不然拿不到duration 
-          // this.setData({
-          //   duration: audioContext.duration // 未播放时不能获取到duration
-          // })
-          ctx.duration = audioContext.duration
-        },0)
-      })
+      
+      /**
+       * 3.播放监听相关事件
+       * 注意点: 因为是全局audioContext, 所以onCanplay每次调用都会给audioContext添加一个监听事件
+       */
+      if (this.isFirstPlay) {
+        audioContext.onCanplay(() => { 
+          audioContext.play() // 播放
+          console.log('canPlay回调')
+          audioContext.duration  // !!必须语句, 初始化时长!!
+          setTimeout(() => { // 这里用异步设置，不然拿不到duration 
+            // this.setData({
+            //   duration: audioContext.duration // 未播放时不能获取到duration
+            // })
+            ctx.duration = audioContext.duration
+          },0)
+        })
+        this.isFirstPlay = false // 设置成false 下次不会重复添加
+      }
+      
+     },
+     // 播放按钮监听公共事件
+     changePlayStatus(ctx) {
+      this.isPause = !this.isPause
+      this.isPause ? ctx.playStatus = 'pause' : ctx.playStatus = 'resume'
+      this.isPause ? audioContext.pause() : audioContext.play()
      }
    }
 })

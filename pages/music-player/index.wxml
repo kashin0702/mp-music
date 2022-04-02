@@ -40,7 +40,7 @@
       <!-- 播放模式，点击循环切换 -->
       <image src="/assets/player/play_{{playModeName}}.png" class="btn" mode="" bindtap="playModeClick"></image>
       <image src="/assets/player/play_prev.png"  class="btn" mode=""></image>
-      <image src="/assets/player/play_resume.png" class="btn btn-pause" mode="" bindtap="musicPause"></image>
+      <image src="/assets/player/play_{{playStatus}}.png" class="btn btn-pause" mode="" bindtap="musicPause"></image>
       <image src="/assets/player/play_next.png" class="btn" mode=""></image>
       <image src="/assets/player/play_music.png" class="btn" mode=""></image>
     </view>
