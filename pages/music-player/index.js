@@ -1,5 +1,5 @@
 // 导入共享对象playerStore
-import { playerStore } from '../../store/music-player'
+import { playerStore } from '../../store/index'
 // import { getSongInfo, getLyric } from '../../service/api-player' 
 // 导入音频对象实例
 import { audioContext } from '../../store/music-player'
@@ -10,7 +10,7 @@ Page({
   data: {
     ids: '',
     barHeight: globalData.statusBarHeight,
-    songInfo: {},
+    songInfo: [],
     contentHeight: globalData.screenHeight - globalData.statusBarHeight - globalData.naviHeight, // 显示区域高度
     sliderValue: 0,  // 滑动条值
     currentTime: 0, // 当前播放位置
@@ -23,85 +23,105 @@ Page({
     baseHeight: 41,
     scrollLineDistance: '', // 歌词每次滚动的距离
     playModeName: 'order', // 播放模式名称
-    playStatus: 'resume' // 暂停还是播放
+    playStatus: 'pause' // 播放按钮图标
   },
   onLoad: function (options) {
     console.log('歌曲id===>', options)
     this.setData({ 
       ids: options.id
     })
-    // 网络请求放到跳转时，调用store请求
+    // 网络请求放到跳转时， 数据保存到store层
     // this.getSongData(this.data.ids)
 
+    /** onCanplay监听获取duration, 卸载页面时要进行offCanplay操作 */
+    audioContext.onCanplay(this.audioCanPlayHook)
     // 这里只调用store进行数据监听，当store有数据时，对页面数据赋值
-    this.handlePlayerStore()
-    
-    // 设置播放源 抽取到store内
-    // audioContext.stop()
-    // audioContext.src = `https://music.163.com/song/media/outer/url?id=${this.data.ids}.mp3`
-    // audioContext.autoplay = true
-   
-    // 监听当音频可以播放时的回调，每次改变进度都会回调
-    // audioContext.onCanplay(() => { 
-    //   audioContext.play() // 播放
-    //   console.log('canPlay回调')
-    //   audioContext.duration  // !!必须语句, 初始化时长!!
-    //   setTimeout(() => { // 这里用异步设置，不然拿不到duration 
+    this.playerStoreWatch()
+
+    // 播放监听都抽到store层
+    // audioContext.onTimeUpdate(() => {
+    //   // console.log('进度更新回调', audioContext)
+    //   if (!this.data.isSlider) { // 没有拖动时再设置数据，防止进度条冲突
     //     this.setData({
-    //       duration: audioContext.duration // 未播放时不能获取到duration
+    //       currentTime: audioContext.currentTime,
+    //       sliderValue: audioContext.currentTime/audioContext.duration * 100
     //     })
-    //   },0)
+    //   }
+    //   for(let i = 0; i < this.data.pattarnLyric.length; i++) {
+    //     // 显示歌词思路: 遍历歌词，当歌词时间大于当前时间时，显示数组前一条歌词
+    //     if(this.data.pattarnLyric[i].time > audioContext.currentTime) {
+    //       const currentIndex = i - 1 // 要显示的是前一条歌词
+    //       if(this.data.currentIndex !== currentIndex) { // 当索引不同时再setData, 否则setData太频繁
+    //         // console.log(this.data.pattarnLyric[currentIndex].text)
+    //         this.setData({
+    //           currentLyric: this.data.pattarnLyric[currentIndex].text, // 歌词
+    //           currentIndex: currentIndex, // 当前歌词索引
+    //           scrollLineDistance: this.data.baseHeight * currentIndex // 每次自动滚动的高度
+    //         })
+    //       }
+    //       break // 一匹配到就立即跳出循环，否则会一直匹配，因为后面的循环都满足条件
+    //     }
+    //   }
     // })
-    audioContext.onTimeUpdate(() => {
-      // console.log('进度更新回调', audioContext)
-      if (!this.data.isSlider) { // 没有拖动时再设置数据，防止进度条冲突
-        this.setData({
-          currentTime: audioContext.currentTime,
-          sliderValue: audioContext.currentTime/audioContext.duration * 100
-        })
-      }
-      for(let i = 0; i < this.data.pattarnLyric.length; i++) {
-        // 显示歌词思路: 遍历歌词，当歌词时间大于当前时间时，显示数组前一条歌词
-        if(this.data.pattarnLyric[i].time > audioContext.currentTime) {
-          const currentIndex = i - 1 // 要显示的是前一条歌词
-          if(this.data.currentIndex !== currentIndex) { // 当索引不同时再setData, 否则setData太频繁
-            // console.log(this.data.pattarnLyric[currentIndex].text)
-            this.setData({
-              currentLyric: this.data.pattarnLyric[currentIndex].text, // 歌词
-              currentIndex: currentIndex, // 当前歌词索引
-              scrollLineDistance: this.data.baseHeight * currentIndex // 每次自动滚动的高度
-            })
-          }
-          break // 一匹配到就立即跳出循环，否则会一直匹配，因为后面的循环都满足条件
-        }
-      }
-    })
   },
   goback() {
     wx.navigateBack()
   },
-  handlePlayerStore() {
+  // store监听的方法
+  playerStoreWatch() {
     // 监听属性可传多个属性， 当监听到数据发生改变时(如网络请求)，调setData进行页面赋值
-    playerStore.onStates(['songInfo', 'pattarnLyric', 'duration'], res => {
-      console.log('监听属性:', res) // 返回的是一个包含多个监听属性的对象
-      if(res.songInfo) this.setData({songInfo: res.songInfo})
-      if(res.pattarnLyric) this.setData({pattarnLyric: res.pattarnLyric})
-      if(res.duration) this.setData({duration: res.duration})
-    })
+    playerStore.onStates(['songInfo', 'pattarnLyric', 'duration'], this.playerInfoListener)
+    playerStore.onStates(['currentTime', 'currentIndex', 'currentLyric'], this.playerInfoListener2)
+    // 监听播放模式按钮 
+    playerStore.onState('playModeIndex', this.playerButtonListner)
+    // 监听播放|暂停按钮
+    playerStore.onState('playStatus', this.playerButtonListner2)
+  },
 
-    // 监听播放模式、播放|暂停按钮
-    playerStore.onStates(['playModeIndex', 'playStatus'], ({playModeIndex, playStatus}) => {
+  // 监听对应的回调
+  playerInfoListener(res) {
+    console.log('监听属性:', res)
+    if(res.songInfo) this.setData({songInfo: res.songInfo})
+    if(res.pattarnLyric) this.setData({pattarnLyric: res.pattarnLyric})
+    if(res.duration) this.setData({duration: res.duration})
+  },
+  playerInfoListener2({currentTime, currentIndex, currentLyric}) {
+     // 和原逻辑一样，当不滑动时再设置currentTime
+     if(!this.data.isSlider) {
+      if(currentTime) {
+        this.setData({
+          currentTime,
+          sliderValue: currentTime / this.data.duration * 100 // 滑块值 页面层数据1
+        })
+      }
+    }
+    if(currentIndex) {
+      this.setData({
+        currentIndex,
+        scrollLineDistance: this.data.baseHeight * currentIndex // 滚动高度 页面层数据2
+      })
+    }
+    if(currentLyric){
+      this.setData({currentLyric})
+    }
+  },
+  playerButtonListner(playModeIndex){
+    console.log('playModeIndex:', playModeIndex)
       this.setData({
         playModeName: playMode[playModeIndex],
-        playStatus: playStatus
       })
-    })
+  },
+  playerButtonListner2(playStatus){
+    console.log('playStatus:', playStatus)
+      this.setData({
+        playStatus
+      })
   },
   // 滑动条改变事件
   sliderChange(event) {
     console.log('滑动条释放====>', event)
     let positionTime = this.data.duration * (event.detail.value / 100)
-    audioContext.pause() // 防止进度按钮跳动
+    audioContext.pause() // change瞬间暂停，防止进度按钮跳动
     audioContext.seek(positionTime) // 跳转到指定位置
     this.setData({
       currentTime: positionTime,
@@ -127,6 +147,14 @@ Page({
     playModeIndex++
     if(playModeIndex > 2) playModeIndex = 0 // 自增到3时，循环切换
     playerStore.setState('playModeIndex', playModeIndex) //保存到共享数据 playModeIndex
+  },
+  audioCanPlayHook() {
+    audioContext.play() // 播放
+    console.log('canPlay回调')
+    audioContext.duration  // !!必须语句, 初始化时长!!
+    setTimeout(() => { // 这里用异步设置，不然拿不到duration 
+      playerStore.setState('duration', audioContext.duration) // 设置store->duration
+    },0)
   },
   // 网络请求
   // getSongData(ids) {
@@ -167,5 +195,11 @@ Page({
   //   }
   // },
   onUnload: function () {
+    audioContext.offCanplay(this.audioCanPlayHook)
+    // 退出页面后取消监听，否则每次进入，playerStore都会增加一个监听回调
+    playerStore.offStates(['songInfo', 'pattarnLyric', 'duration'], this.playerInfoListener)
+    playerStore.offStates(['currentTime', 'currentIndex', 'currentLyric'], this.playerInfoListener2)
+    playerStore.offState('playModeIndex', this.playerButtonListner)
+    playerStore.offState('playStatus', this.playerButtonListner2)
   }
 })
