@@ -8,37 +8,38 @@ export const audioContext = wx.createInnerAudioContext()
 const playerStore = new HYEventStore({
    state: {
     id: '',
-    songInfo: {},
+    songInfo: [],
     pattarnLyric: [],
-    duration: '',
-    playModeIndex: '0', // 播放模式索引
-    playStatus: 'resume', // 暂停|播放
+    duration: 0,
+    playModeIndex: '0', // 播放模式按钮索引
+    playStatus: 'pause', // 暂停|播放
     isPause: false,
-    isFirstPlay: true // 重要属性！防止onPlay重复添加监听事件
+    currentTime: 0, // 当前播放时间
+    currentIndex: 0, // 当前播放时间对应索引
+    currentLyric: '' // 当前要显示的歌词
    },
    actions: {
-     // 网络请求 解构传过来的id
+     // ===================== 网络请求 =====================================
      getMusicPageDataAction(ctx, {id}) {
        if(ctx.id === id) return // 是同一首歌，不做任何操作
        ctx.id = id
        // 1.请求歌曲相关数据
       getSongInfo(id).then(res => {
         console.log('歌曲信息====', res)
-        // this.setData({ songInfo: res.songs })
-        ctx.songInfo = res.songs // 不能用setData，直接用ctx赋值
+        ctx.songInfo = res.songs
+        // ctx.duration = res.songs[0].dt
       })
       // 歌词同步显示思路： 把字符串分秒换算成秒，和歌词放在一个数组对象中
       getLyric(id).then(res => {
-        // console.log('原始歌词====>', res)
+        console.log('原始歌词====>', res)
         let lyricString = res.lrc.lyric
         lyricString = lyricString.split('\n') //利用字符串中的换行符对每行歌词切割成数组
         const pattarnLyric = []
         for(let lyricLine of lyricString) {
           let lyricItem = parseLyric(lyricLine)
-          pattarnLyric.push(lyricItem)
+          if(lyricItem) pattarnLyric.push(lyricItem)
         }
         // console.log('转化后歌词数组====', pattarnLyric)
-        // this.setData({ pattarnLyric }) // 不能用setData
         ctx.pattarnLyric = pattarnLyric // 直接用ctx赋值
       })
 
@@ -46,32 +47,54 @@ const playerStore = new HYEventStore({
       audioContext.stop()
       audioContext.src = `https://music.163.com/song/media/outer/url?id=${id}.mp3`
       audioContext.autoplay = true
+      
+      // 3. 这里调监听方法
+      this.dispatch('audioContextListenerAction')
+     },
 
-      
-      /**
-       * 3.播放监听相关事件
-       * 注意点: 因为是全局audioContext, 所以onCanplay每次调用都会给audioContext添加一个监听事件
-       */
-      if (this.isFirstPlay) {
-        audioContext.onCanplay(() => { 
-          audioContext.play() // 播放
-          console.log('canPlay回调')
-          audioContext.duration  // !!必须语句, 初始化时长!!
-          setTimeout(() => { // 这里用异步设置，不然拿不到duration 
-            // this.setData({
-            //   duration: audioContext.duration // 未播放时不能获取到duration
-            // })
-            ctx.duration = audioContext.duration
-          },0)
-        })
-        this.isFirstPlay = false // 设置成false 下次不会重复添加
-      }
-      
+     // =================================== audio监听 =====================================
+     audioContextListenerAction(ctx) {
+      /** onCanplay监听放到页面层，因为要在unOnLoad中进行卸载 */
+        // audioContext.onCanplay(() => { 
+        //   audioContext.play() // 播放
+        //   console.log('canPlay回调')
+        //   audioContext.duration  // !!必须语句, 初始化时长!!
+        //   setTimeout(() => { // 这里用异步设置，不然拿不到duration 
+        //     ctx.duration = audioContext.duration
+        //   },0)
+        // })
+       audioContext.onTimeUpdate(() => {
+         // store层没有拖动事件
+        // if (!this.data.isSlider) { 
+        //   this.setData({
+        //     currentTime: audioContext.currentTime,
+        //     sliderValue: audioContext.currentTime/audioContext.duration * 100 // 页面层数据1,在页面处理
+        //   })
+        // }
+        ctx.currentTime = audioContext.currentTime
+
+        for(let i = 0; i < ctx.pattarnLyric.length; i++) {
+          // 显示歌词思路: 遍历歌词，当歌词时间大于当前时间时，显示数组前一条歌词
+          if(ctx.pattarnLyric[i].time > audioContext.currentTime) {
+            const currentIndex = i - 1 // 要显示的是前一条歌词
+            if(ctx.currentIndex !== currentIndex) { // 当索引不同时再setData, 否则setData太频繁
+              // this.setData({
+              //   currentLyric: this.data.pattarnLyric[currentIndex].text, // 歌词
+              //   currentIndex: currentIndex, // 当前歌词索引
+              //   scrollLineDistance: this.data.baseHeight * currentIndex // 每次自动滚动的高度 页面层数据2，在页面处理
+              // })
+              ctx.currentLyric = ctx.pattarnLyric[currentIndex].text
+              ctx.currentIndex = currentIndex
+            }
+            break // 一匹配到就立即跳出循环，否则会一直匹配，因为后面的循环都满足条件
+          }
+        }
+      })
      },
      // 播放按钮监听公共事件
      changePlayStatus(ctx) {
       this.isPause = !this.isPause
-      this.isPause ? ctx.playStatus = 'pause' : ctx.playStatus = 'resume'
+      this.isPause ? ctx.playStatus = 'resume' : ctx.playStatus = 'pause'
       this.isPause ? audioContext.pause() : audioContext.play()
      }
    }
