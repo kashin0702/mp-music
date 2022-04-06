@@ -52,7 +52,7 @@ const playerStore = new HYEventStore({
       audioContext.src = `https://music.163.com/song/media/outer/url?id=${id}.mp3`
       audioContext.autoplay = true
       
-      // 3. 这里调监听方法
+      // 3. audio监听 只有首次播放时才调监听方法，否则每次调用都会增加一个回调事件
       if(ctx.isFirstPlay) {
         this.dispatch('audioContextListenerAction')
         ctx.isFirstPlay = false
@@ -61,15 +61,14 @@ const playerStore = new HYEventStore({
 
      // =================================== audio监听 =====================================
      audioContextListenerAction(ctx) {
-      /** onCanplay监听放到页面层，因为要在unOnLoad中进行卸载 */
-        // audioContext.onCanplay(() => { 
-        //   audioContext.play() // 播放
-        //   console.log('canPlay回调')
-        //   audioContext.duration  // !!必须语句, 初始化时长!!
-        //   setTimeout(() => { // 这里用异步设置，不然拿不到duration 
-        //     ctx.duration = audioContext.duration
-        //   },0)
-        // })
+        audioContext.onCanplay(() => { 
+          audioContext.play() // 播放
+          console.log('canPlay回调')
+          audioContext.duration  // !!必须语句, 初始化时长!!
+          setTimeout(() => { // 这里用异步设置，不然拿不到duration 
+            ctx.duration = audioContext.duration
+          },0)
+        })
        audioContext.onTimeUpdate(() => {
          // store层没有拖动事件
         // if (!this.data.isSlider) { 
@@ -96,6 +95,9 @@ const playerStore = new HYEventStore({
             break // 一匹配到就立即跳出循环，否则会一直匹配，因为后面的循环都满足条件
           }
         }
+      })
+      audioContext.onEnded(() => {
+        this.dispatch('changeSongs', 'next')
       })
      },
      // 播放按钮监听公共事件

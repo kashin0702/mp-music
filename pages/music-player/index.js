@@ -37,7 +37,8 @@ Page({
     // this.getSongData(this.data.ids)
 
     /** onCanplay监听获取duration, 卸载页面时要进行offCanplay操作 */
-    audioContext.onCanplay(this.audioCanPlayHook)
+    // audioContext.onCanplay(this.audioCanPlayHook)
+
     // 这里只调用store进行数据监听，当store有数据时，对页面数据赋值
     this.playerStoreWatch()
 
@@ -164,60 +165,21 @@ Page({
     let btnType = event.currentTarget.dataset.type
     playerStore.dispatch('changeSongs', btnType)
   },
-  audioCanPlayHook() {
-    audioContext.play() // 播放
-    console.log('canPlay回调')
-    audioContext.duration  // !!必须语句, 初始化时长!!
-    setTimeout(() => { // 这里用异步设置，不然拿不到duration 
-      playerStore.setState('duration', audioContext.duration) // 设置store->duration
-    },0)
-  },
-  // 网络请求
-  // getSongData(ids) {
-  //   getSongInfo(ids).then(res => {
-  //     console.log('歌曲信息====', res)
-  //     this.setData({ songInfo: res.songs })
-  //   })
-  //   // 歌词同步显示思路： 把字符串分秒换算成秒，和歌词放在一个数组对象中
-  //   getLyric(ids).then(res => {
-  //     // console.log('原始歌词====>', res)
-  //     let lyricString = res.lrc.lyric
-  //     lyricString = lyricString.split('\n') //利用字符串中的换行符对每行歌词切割成数组
-  //     // this.setData({lyricString})
-  //     const pattarnLyric = []
-  //     for(let lyricLine of lyricString) {
-  //       let lyricItem = this.parseLyric(lyricLine)
-  //       pattarnLyric.push(lyricItem)
-  //     }
-  //     console.log('转化后歌词数组====', pattarnLyric)
-  //     this.setData({ pattarnLyric })
-  //   })
-  // },
-  // 歌词转化
-  // parseLyric(lyric) {
-  //   // [00:01.152] 正则匹配这种类型的字符串
-  //   let reg = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/
-  //   let result = reg.exec(lyric)
-  //   // console.log('正则匹配结果', result)
-  //   if (result) { // 利用result返回的正则匹配数组，计算时间
-  //     let min = result[1] * 60
-  //     let sec = result[2] * 1
-  //     let miliSec = result[3].length === 2 ? (result[3] + '0') / 1000 : result[3] / 1000
-  //     let time = min + sec + miliSec
-  //     // console.log('时间点', time)
-  //     let text = lyric.replace(reg, '')  // 提取歌词部分
-  //     let lyricItem = { time, text } // 把转化后的时间和歌词放在一个对象中返回
-  //     return lyricItem
-  //   }
+  // audioCanPlayHook() {
+  //   audioContext.play() // 播放
+  //   console.log('canPlay回调')
+  //   audioContext.duration  // !!必须语句, 初始化时长!!
+  //   setTimeout(() => { // 这里用异步设置，不然拿不到duration 
+  //     playerStore.setState('duration', audioContext.duration) // 设置store->duration
+  //   },0)
   // },
   onUnload: function () {
-    audioContext.offCanplay(this.audioCanPlayHook)
+    // audioContext.offCanplay(this.audioCanPlayHook)
     // 退出页面后取消监听，否则每次进入，playerStore都会增加一个监听回调
     playerStore.offStates(['songInfo', 'pattarnLyric', 'duration'], this.playerInfoListener)
     playerStore.offStates(['currentTime', 'currentIndex', 'currentLyric'], this.playerInfoListener2)
     playerStore.offState('playModeIndex', this.playerButtonListner)
     playerStore.offState('playStatus', this.playerButtonListner2)
-
     playerStore.offStates(['playList', 'playIndex'], this.playListListener)
   }
 })
