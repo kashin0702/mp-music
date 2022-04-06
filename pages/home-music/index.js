@@ -1,5 +1,5 @@
 // 导入第三方库的rankingStore对象
-import {rankingStore} from '../../store/index'
+import {rankingStore, playerStore} from '../../store/index'
 import { 
   getBanners,
   getSongMenu 
@@ -61,7 +61,12 @@ Page({
       })
     })
   },
-
+  // 获取播放列表 播放页切歌时使用
+  getPlayList(event) {
+    // console.log('歌曲点击', event)
+    playerStore.setState('playIndex', event.target.dataset.index) // 保存点击的索引
+    playerStore.setState('playList', this.data.recommends) // 保存歌曲列表
+  },
   onLoad: function (options) {
     this.getPageData()
     // 调用第三方状态库store的dispatch 进行网络请求
@@ -121,30 +126,10 @@ Page({
       url: `/pages/songs-detail/index?id=${id}`,
     })
   },
-  onReady: function () {
-
-  },
-
-  onShow: function () {
-
-  },
-
-  onHide: function () {
-
-  },
 
   onUnload: function () {
-
-  },
-
-  onPullDownRefresh: function () {
-
-  },
-
-  onReachBottom: function () {
-
-  },
-  onShareAppMessage: function () {
-
+    rankingStore.offState('newRanking', this.rankingHandler('newRanking'))
+    rankingStore.offState('originRanking', this.rankingHandler('originRanking'))
+    rankingStore.offState('highRanking', this.rankingHandler('highRanking'))
   }
 })

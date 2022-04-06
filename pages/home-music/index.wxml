@@ -25,7 +25,8 @@ bind:click-input="goSearch"
       <!-- <view>我是自定义插槽</view> -->
     </area-header>
     <block wx:for="{{recommends}}" wx:key="id">
-      <music-item-v1 item="{{item}}"></music-item-v1>
+    <!-- getPlayList用于保存当前歌曲列表，在播放页切歌时使用, 索引用于记录当前点的是哪首歌 -->
+      <music-item-v1 item="{{item}}" bindtap="getPlayList" data-index="{{index}}"></music-item-v1>
     </block>
   </view>
 

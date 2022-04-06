@@ -5,7 +5,7 @@ import { playerStore } from '../../store/index'
 import { audioContext } from '../../store/music-player'
 const globalData = getApp().globalData
 const playMode = ['order', 'random', 'repeat'] // 全局播放模式名称
-let playModeIndex = 0 // 全局playMode索引
+let pagePlayModeIndex = 0 // 全局playMode索引
 Page({
   data: {
     ids: '',
@@ -23,7 +23,10 @@ Page({
     baseHeight: 41,
     scrollLineDistance: '', // 歌词每次滚动的距离
     playModeName: 'order', // 播放模式名称
-    playStatus: 'pause' // 播放按钮图标
+    playModeIndex: null, // 播放模式索引
+    playStatus: 'pause', // 播放按钮图标
+    playList: [], // 歌曲列表
+    playIndex: null // 当前歌曲位置索引
   },
   onLoad: function (options) {
     console.log('歌曲id===>', options)
@@ -76,6 +79,9 @@ Page({
     playerStore.onState('playModeIndex', this.playerButtonListner)
     // 监听播放|暂停按钮
     playerStore.onState('playStatus', this.playerButtonListner2)
+
+    // 监听歌曲列表
+    playerStore.onStates(['playList', 'playIndex'], this.playListListener)
   },
 
   // 监听对应的回调
@@ -108,6 +114,7 @@ Page({
   playerButtonListner(playModeIndex){
     console.log('playModeIndex:', playModeIndex)
       this.setData({
+        playModeIndex,
         playModeName: playMode[playModeIndex],
       })
   },
@@ -116,6 +123,10 @@ Page({
       this.setData({
         playStatus
       })
+  },
+  playListListener({playList, playIndex}) {
+    if(playList) this.setData({playList})
+    if(playIndex !== null) this.setData({playIndex})
   },
   // 滑动条改变事件
   sliderChange(event) {
@@ -144,9 +155,14 @@ Page({
   },
   // 播放模式切换
   playModeClick() {
-    playModeIndex++
-    if(playModeIndex > 2) playModeIndex = 0 // 自增到3时，循环切换
-    playerStore.setState('playModeIndex', playModeIndex) //保存到共享数据 playModeIndex
+    pagePlayModeIndex++
+    if(pagePlayModeIndex > 2) pagePlayModeIndex = 0 // 自增到3时，循环切换
+    playerStore.setState('playModeIndex', pagePlayModeIndex) //保存到共享数据 playModeIndex
+  },
+  // 上一首 下一首
+  playChangeSong(event) {
+    let btnType = event.currentTarget.dataset.type
+    playerStore.dispatch('changeSongs', btnType)
   },
   audioCanPlayHook() {
     audioContext.play() // 播放
@@ -201,5 +217,7 @@ Page({
     playerStore.offStates(['currentTime', 'currentIndex', 'currentLyric'], this.playerInfoListener2)
     playerStore.offState('playModeIndex', this.playerButtonListner)
     playerStore.offState('playStatus', this.playerButtonListner2)
+
+    playerStore.offStates(['playList', 'playIndex'], this.playListListener)
   }
 })

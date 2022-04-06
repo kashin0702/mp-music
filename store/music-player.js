@@ -11,17 +11,21 @@ const playerStore = new HYEventStore({
     songInfo: [],
     pattarnLyric: [],
     duration: 0,
-    playModeIndex: '0', // 播放模式按钮索引
+    playModeIndex: 0, // 播放模式按钮索引
     playStatus: 'pause', // 暂停|播放
     isPause: false,
     currentTime: 0, // 当前播放时间
     currentIndex: 0, // 当前播放时间对应索引
-    currentLyric: '' // 当前要显示的歌词
+    currentLyric: '', // 当前要显示的歌词
+    playList: [], // 播放歌曲列表
+    playIndex: null, // 当前歌曲索引
+    isFirstPlay: true // 是否第一次播放
    },
    actions: {
-     // ===================== 网络请求 =====================================
-     getMusicPageDataAction(ctx, {id}) {
-       if(ctx.id === id) return // 是同一首歌，不做任何操作
+     getMusicPageDataAction(ctx, {id, isRefresh = false}) {
+       // =========================== 网络请求 =====================================
+       // 是同一首歌且不强制重播，不做任何操作返回
+       if(ctx.id === id && !isRefresh) return
        ctx.id = id
        // 1.请求歌曲相关数据
       getSongInfo(id).then(res => {
@@ -49,7 +53,10 @@ const playerStore = new HYEventStore({
       audioContext.autoplay = true
       
       // 3. 这里调监听方法
-      this.dispatch('audioContextListenerAction')
+      if(ctx.isFirstPlay) {
+        this.dispatch('audioContextListenerAction')
+        ctx.isFirstPlay = false
+      }
      },
 
      // =================================== audio监听 =====================================
@@ -96,6 +103,38 @@ const playerStore = new HYEventStore({
       this.isPause = !this.isPause
       this.isPause ? ctx.playStatus = 'resume' : ctx.playStatus = 'pause'
       this.isPause ? audioContext.pause() : audioContext.play()
+     },
+     // 上一首、下一首
+     changeSongs(ctx, btnType) {
+        let index,
+            id
+        switch(ctx.playModeIndex) {
+          case 0:// 顺序播放
+            index = ctx.playIndex
+            if(btnType === 'next') {
+              index++
+              if(index > ctx.playList.length - 1) index = 0
+            } else if(btnType === 'prev') {
+              index--
+              if(index < 0) index = ctx.playList.length - 1
+            }
+            ctx.playIndex = index // 保存index 用于连续切歌
+            id = ctx.playList[index].id // 获取下一个要播放的歌曲Id
+            break;
+          case 1: // 随机播放
+            index = ctx.playIndex
+            let randomIndex = Math.floor(Math.random() * ctx.playList.length)
+            if(index === randomIndex) {// 随机后是同一个,继续随机
+              randomIndex = Math.floor(Math.random() * ctx.playList.length)
+            }else {
+              id = ctx.playList[randomIndex].id
+              break;
+            }
+          case 2: // 单曲循环
+            id = ctx.playList[ctx.playIndex].id
+            break;
+        }
+        this.dispatch('getMusicPageDataAction', {id, isRefresh: true}) // 传入下一首的id，重新调歌曲播放方法
      }
    }
 })
