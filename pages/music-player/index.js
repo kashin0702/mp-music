@@ -39,7 +39,7 @@ Page({
     /** onCanplay监听获取duration, 卸载页面时要进行offCanplay操作 */
     // audioContext.onCanplay(this.audioCanPlayHook)
 
-    // 这里只调用store进行数据监听，当store有数据时，对页面数据赋值
+    // 这里只调用store进行数据监听，当store数据改变时，对页面数据赋值
     this.playerStoreWatch()
 
     // 播放监听都抽到store层
@@ -79,13 +79,12 @@ Page({
     // 监听播放模式按钮 
     playerStore.onState('playModeIndex', this.playerButtonListner)
     // 监听播放|暂停按钮
-    playerStore.onState('playStatus', this.playerButtonListner2)
-
+    playerStore.onStates(['playStatus', 'isPause'], this.playerButtonListner2)
     // 监听歌曲列表
     playerStore.onStates(['playList', 'playIndex'], this.playListListener)
   },
 
-  // 监听对应的回调
+  // ======================= 对应store监听的回调方法 =====================================
   playerInfoListener(res) {
     console.log('监听属性:', res)
     if(res.songInfo) this.setData({songInfo: res.songInfo})
@@ -119,22 +118,30 @@ Page({
         playModeName: playMode[playModeIndex],
       })
   },
-  playerButtonListner2(playStatus){
-    console.log('playStatus:', playStatus)
-      this.setData({
-        playStatus
-      })
+  playerButtonListner2(res){
+    console.log(res)
+    if(res.playStatus !== undefined) this.setData({playStatus: res.playStatus})
+    if(res.isPause !== undefined) this.setData({isPause: res.isPause})
+    // 监听多个数据不能一起setData, 必须单独判断有值后才能赋值
+    // this.setData({
+    //   playStatus: res.playStatus,
+    //   isPause: res.isPause
+    // })
   },
   playListListener({playList, playIndex}) {
     if(playList) this.setData({playList})
     if(playIndex !== null) this.setData({playIndex})
   },
+  // ↑ ======================= 对应store监听的回调方法 ===================================== ↑
+  
   // 滑动条改变事件
   sliderChange(event) {
     console.log('滑动条释放====>', event)
     let positionTime = this.data.duration * (event.detail.value / 100)
     audioContext.pause() // change瞬间暂停，防止进度按钮跳动
     audioContext.seek(positionTime) // 跳转到指定位置
+    // 若当前是暂停状态，拖动后取反播放按钮
+    if(this.data.isPause) this.musicPause()
     this.setData({
       currentTime: positionTime,
       sliderValue: event.detail.value,
@@ -152,7 +159,7 @@ Page({
   // 暂停 播放
   musicPause() {
     // 播放按钮改变时，调用公共方法修改数据
-    playerStore.dispatch('changePlayStatus')
+    playerStore.dispatch('changePlayStatus', !this.data.isPause)
   },
   // 播放模式切换
   playModeClick() {
@@ -179,7 +186,7 @@ Page({
     playerStore.offStates(['songInfo', 'pattarnLyric', 'duration'], this.playerInfoListener)
     playerStore.offStates(['currentTime', 'currentIndex', 'currentLyric'], this.playerInfoListener2)
     playerStore.offState('playModeIndex', this.playerButtonListner)
-    playerStore.offState('playStatus', this.playerButtonListner2)
+    playerStore.offStates(['playStatus', 'isPause'], this.playerButtonListner2)
     playerStore.offStates(['playList', 'playIndex'], this.playListListener)
   }
 })

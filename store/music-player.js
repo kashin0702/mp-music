@@ -27,6 +27,8 @@ const playerStore = new HYEventStore({
        // 是同一首歌且不强制重播，不做任何操作返回
        if(ctx.id === id && !isRefresh) return
        ctx.id = id
+       ctx.isPause = false
+       ctx.playStatus = 'pause'
        // 1.请求歌曲相关数据
       getSongInfo(id).then(res => {
         console.log('歌曲信息====', res)
@@ -61,7 +63,7 @@ const playerStore = new HYEventStore({
 
      // =================================== audio监听 =====================================
      audioContextListenerAction(ctx) {
-        audioContext.onCanplay(() => { 
+        audioContext.onCanplay(() => {
           audioContext.play() // 播放
           console.log('canPlay回调')
           audioContext.duration  // !!必须语句, 初始化时长!!
@@ -100,11 +102,11 @@ const playerStore = new HYEventStore({
         this.dispatch('changeSongs', 'next')
       })
      },
-     // 播放按钮监听公共事件
-     changePlayStatus(ctx) {
-      this.isPause = !this.isPause
-      this.isPause ? ctx.playStatus = 'resume' : ctx.playStatus = 'pause'
-      this.isPause ? audioContext.pause() : audioContext.play()
+     // 播放按钮监听公共事件 是否暂停用参数形式传入，提升扩展性
+     changePlayStatus(ctx, isPause = true) {
+      ctx.isPause = isPause
+      isPause ? ctx.playStatus = 'resume' : ctx.playStatus = 'pause'
+      isPause ? audioContext.pause() : audioContext.play()
      },
      // 上一首、下一首
      changeSongs(ctx, btnType) {
