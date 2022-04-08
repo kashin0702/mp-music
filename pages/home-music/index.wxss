@@ -58,3 +58,51 @@ swiper {
   border-radius: 10rpx;
   padding: 5rpx;
 }
+/* 播放工具栏 */
+.bar-fix {
+  height: 44px;
+}
+.player-bar {
+  background-color: #fafafa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.2);
+  height: 44px;
+}
+.bar-left {
+  display: flex;
+  align-items: center;
+}
+/* 歌曲封面 增加动画 */
+.bar-left image {
+  position: relative;
+  left: 20rpx;
+  top: -15rpx;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  animation: playing 20s linear infinite;
+}
+.bar-left text {
+  padding-left: 30rpx;
+  font-size: 26rpx;
+}
+@keyframes playing {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.bar-right {
+  padding-right: 20rpx;
+}
+.bar-right image {
+  width: 60rpx;
+}

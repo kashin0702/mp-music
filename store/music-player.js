@@ -2,8 +2,8 @@ import { HYEventStore } from 'hy-event-store'
 import { getSongInfo, getLyric } from '../service/api-player'
 import { parseLyric } from '../utils/parseLyric'
 // 创建音频对象实例并导出，全局共用该实例 因为后续要用到store的公共方法，所以放在store层
-export const audioContext = wx.createInnerAudioContext()
-
+export const audioContext = wx.createInnerAudioContext() // 不用内置音频对象
+// export const audioContext = wx.getBackgroundAudioManager() // 使用全局的背景音频管理器，小程序退到后台时也能播放，方法和上面的几乎一样
 // 音乐播放相关功能都抽到响应式数据内
 const playerStore = new HYEventStore({
    state: {
@@ -34,6 +34,7 @@ const playerStore = new HYEventStore({
         console.log('歌曲信息====', res)
         ctx.songInfo = res.songs
         // ctx.duration = res.songs[0].dt
+        audioContext.title = res.songs[0].name // newAdd:获取Title 使用getBackgroundAudioManager必填
       })
       // 歌词同步显示思路： 把字符串分秒换算成秒，和歌词放在一个数组对象中
       getLyric(id).then(res => {
@@ -53,6 +54,7 @@ const playerStore = new HYEventStore({
       audioContext.stop()
       audioContext.src = `https://music.163.com/song/media/outer/url?id=${id}.mp3`
       audioContext.autoplay = true
+      audioContext.title = id // newAdd:没获取到name前先获取id 否则无法播放
       
       // 3. audio监听 只有首次播放时才调监听方法，否则每次调用都会增加一个回调事件
       if(ctx.isFirstPlay) {

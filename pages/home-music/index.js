@@ -20,7 +20,9 @@ Page({
       'newRanking': {}, 
       'originRanking': {}, 
       'highRanking': {}
-    } 
+    },
+    songInfo: [], // 当前播放的歌曲 
+    isPause: false
   },
   goSearch() {
     wx.navigateTo({
@@ -67,6 +69,10 @@ Page({
     playerStore.setState('playIndex', event.target.dataset.index) // 保存点击的索引
     playerStore.setState('playList', this.data.recommends) // 保存歌曲列表
   },
+  // 播放工具栏 播放|暂停
+  handlePlayBarStatus() {
+    playerStore.dispatch('changePlayStatus', !this.data.isPause)
+  },
   onLoad: function (options) {
     this.getPageData()
     // 调用第三方状态库store的dispatch 进行网络请求
@@ -86,6 +92,15 @@ Page({
     rankingStore.onState('newRanking', this.rankingHandler('newRanking'))
     rankingStore.onState('originRanking', this.rankingHandler('originRanking'))
     rankingStore.onState('highRanking', this.rankingHandler('highRanking'))
+    // 获取当前播放歌曲 播放工具栏使用
+    playerStore.onState('songInfo', this.songInfoHandler)
+    playerStore.onState('isPause', this.statusHandler)
+  },
+  songInfoHandler(songInfo) {
+    this.setData({songInfo})
+  },
+  statusHandler(isPause) {
+    this.setData({isPause})
   },
   // 监听数据的处理函数，利用柯里化返回一个真正要执行的回调函数
   rankingHandler(rankingName) { // 传入要创建的榜单名
@@ -131,5 +146,7 @@ Page({
     rankingStore.offState('newRanking', this.rankingHandler('newRanking'))
     rankingStore.offState('originRanking', this.rankingHandler('originRanking'))
     rankingStore.offState('highRanking', this.rankingHandler('highRanking'))
+    playerStore.offState('songInfo', this.songInfoHandler)
+    playerStore.offState('isPause', this.statusHandler)
   }
 })

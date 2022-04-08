@@ -138,10 +138,13 @@ Page({
   sliderChange(event) {
     console.log('滑动条释放====>', event)
     let positionTime = this.data.duration * (event.detail.value / 100)
-    audioContext.pause() // change瞬间暂停，防止进度按钮跳动
+    // audioContext.pause() // change瞬间暂停，防止进度按钮跳动
     audioContext.seek(positionTime) // 跳转到指定位置
     // 若当前是暂停状态，拖动后取反播放按钮
-    if(this.data.isPause) this.musicPause()
+    if(this.data.isPause) {
+      playerStore.setState('isPause', !this.data.isPause)
+      playerStore.setState('playStatus', 'pause')
+    }
     this.setData({
       currentTime: positionTime,
       sliderValue: event.detail.value,

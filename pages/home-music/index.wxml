@@ -53,4 +53,23 @@ bind:click-input="goSearch"
       </view>
     </view>
   
+  <!-- 播放工具栏 -->
+  <!-- 占位容器 当显示工具栏时显示 防止挡住页面底部 -->
+  <view class="bar-fix" wx:if="{{songInfo.length}}"></view>
+  <view class="player-bar" wx:if="{{songInfo.length}}">
+    <view class="bar-left">
+      <!-- 歌曲封面 animation-play-state：动画是否执行属性 -->
+      <image src="{{songInfo[0].al.picUrl}}" mode="aspectFill"
+      style="animation-play-state: {{isPause ? 'paused' : 'running'}};"></image>
+      <!-- 歌名 -->
+      <text>{{songInfo[0].al.name}}</text>
+    </view>
+    <view class="bar-right">
+      <image src="/assets/bar/{{isPause ? 'play_icon' : 'pause_icon'}}.png"
+      mode="widthFix"
+      bindtap="handlePlayBarStatus">
+      </image>
+      <image src="/assets/bar/playlist_icon.png" mode="widthFix"></image>
+    </view>
+  </view>
 </view>
