@@ -46,8 +46,11 @@ scroll-view {
   display: -moz-box;
   -moz-box-orient: vertical;
   -moz-line-clamp: 2;
+  /* 允许长单词或 URL 地址在容器的边界处自动换行 */
   word-wrap: break-word;
-  word-break: break-all;
-  white-space: normal;
+  /* 单词内的换行方式： break-all允许截断单词 */
+  word-break: break-all; 
+  /* 真机存在兼容问题 */
+  /* white-space: normal; */
   overflow: hidden;
 }
